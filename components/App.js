@@ -9,10 +9,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import { connect } from 'react-redux';
-import { fetchMovies } from './actions/movies';
 
-class App extends Component {
+export default class App extends Component {
   static propTypes = {
     isFetching: PropTypes.bool.isRequired,
     movies: PropTypes.array.isRequired,
@@ -72,20 +70,6 @@ class App extends Component {
     );
   }
 }
-
-const mapStateToProps = state => ({
-  isFetching: state.movies.isFetching,
-  movies: state.movies.items,
-});
-
-const mapDispatchToProps = {
-  fetchMovies,
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(App);
 
 const styles = StyleSheet.create({
   container: {
