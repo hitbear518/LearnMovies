@@ -1,5 +1,6 @@
 import React, {
   Component,
+  PropTypes,
 } from 'react';
 import {
   Image,
@@ -8,34 +9,25 @@ import {
   Text,
   View,
 } from 'react-native';
+import { connect } from 'react-redux';
+import { fetchMovies } from './actions/movies';
 
-const REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json';
+class App extends Component {
+  static propTypes = {
+    isFetching: PropTypes.bool.isRequired,
+    movies: PropTypes.array.isRequired,
+    fetchMovies: PropTypes.func.isRequired,
+  };
 
-export default class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      dataSource: new ListView.DataSource({
-        rowHasChanged: (row1, row2) => row1 !== row2,
-      }),
-      loaded: false,
-    };
+    this.dataSource = new ListView.DataSource({
+      rowHasChanged: (row1, row2) => row1 !== row2,
+    });
   }
 
   componentDidMount() {
-    this.fetchData();
-  }
-
-  fetchData() {
-    fetch(REQUEST_URL)
-      .then((response) => response.json())
-      .then((responseData) => {
-        this.setState({
-          dataSource: this.state.dataSource.cloneWithRows(responseData.movies),
-          loaded: true,
-        });
-      })
-      .done();
+    this.props.fetchMovies();
   }
 
   renderLoadingView() {
@@ -64,19 +56,36 @@ export default class App extends Component {
   }
 
   render() {
-    if (!this.state.loaded) {
+    const { isFetching, movies } = this.props;
+    if (isFetching) {
       return this.renderLoadingView();
     }
 
+    this.dataSource = this.dataSource.cloneWithRows(movies);
     return (
       <ListView
-        dataSource={this.state.dataSource}
+        dataSource={this.dataSource}
         renderRow={this.renderMovie}
         style={styles.listView}
+        enableEmptySections
       />
     );
   }
 }
+
+const mapStateToProps = state => ({
+  isFetching: state.movies.isFetching,
+  movies: state.movies.items,
+});
+
+const mapDispatchToProps = {
+  fetchMovies,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);
 
 const styles = StyleSheet.create({
   container: {
