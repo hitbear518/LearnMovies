@@ -14,6 +14,8 @@
         "react-native/no-inline-styles": 2,
         
         "no-use-before-define": 0,
+        "no-underscore-dangle": 0,
+        "no-console": 0,
         
         "react/prefer-stateless-function": 1
     }
